@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="menu-container">
+    <h1>Our Menu</h1>
+
+    <div class="menu-grid" id="menuGrid">
+        {% for item in menu_items %}
+        <div class="menu-item">
+            <img src="{{ item.image_url }}" alt="{{ item.name }}">
+            <h3>{{ item.name }}</h3>
+            <p>Price: ${{ item.price }}</p>
+            <button onclick="showQuantityPopup('{{ item.name | e }}', '{{ item.price }}')">Order Now</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Quantity Popup -->
+<div id="quantityPopup" class="popup" style="display: none;">
+    <div class="popup-content">
+        <h3 id="popupItemName"></h3>
+        <input type="number" id="quantityInput" value="1" min="1">
+        <button onclick="addToCart()">Add to Cart</button>
+        <button onclick="closePopup()">Cancel</button>
+    </div>
+</div>
+
+<!-- Checkout Button -->
+<div class="checkout-container">
+    <button class="btn btn-primary" onclick="window.location.href='/cart'">Check Out</button>
+</div>
+
+
+<script>
+let selectedItem = null;
+
+function showQuantityPopup(name, price) {
+    selectedItem = { name, price: parseFloat(price) };
+    document.getElementById("popupItemName").innerText = name;
+    document.getElementById("quantityInput").value = 1;
+    document.getElementById("quantityPopup").style.display = "flex";
+}
+
+function closePopup() {
+    document.getElementById("quantityPopup").style.display = "none";
+    selectedItem = null;
+}
+
+function addToCart() {
+    const quantity = parseInt(document.getElementById("quantityInput").value);
+    if (!selectedItem || quantity < 1) return;
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let existing = cart.find(item => item.name === selectedItem.name);
+
+    if (existing) {
+        existing.quantity += quantity;
+    } else {
+        cart.push({ ...selectedItem, quantity });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    closePopup();
+}
+
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById("cartCount").innerText = total;
+}
+
+document.addEventListener("DOMContentLoaded", updateCartCount);
+
+</script>
+
+{% endblock %}

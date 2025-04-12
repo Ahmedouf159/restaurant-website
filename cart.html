@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cart-container">
+    <h1>Your Cart</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="cartTableBody"></tbody>
+    </table>
+
+    <h3>Total Price: <span id="totalPrice">$0.00</span></h3>
+    <button onclick="clearCart()" class="btn btn-danger">Clear Cart</button>
+    <button onclick="submitOrder()" class="btn btn-success">Submit Order</button>
+</div>
+
+<script>
+// Load cart items when the page loads
+document.addEventListener("DOMContentLoaded", displayCartItems);
+
+function displayCartItems() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cartTable = document.getElementById("cartTableBody");
+    let totalPriceElement = document.getElementById("totalPrice");
+
+    cartTable.innerHTML = ""; // Clear cart table
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        let itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        let row = `
+            <tr>
+                <td>${item.name}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td>
+                    <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)">
+                </td>
+                <td>$${itemTotal.toFixed(2)}</td>
+                <td><button onclick="removeFromCart(${index})" class="remove-btn">Remove</button></td>
+            </tr>
+        `;
+        cartTable.innerHTML += row;
+    });
+
+    totalPriceElement.innerText = `$${total.toFixed(2)}`;
+}
+
+// Update quantity in cart
+function updateQuantity(index, newQuantity) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    newQuantity = parseInt(newQuantity);
+
+    if (newQuantity > 0) {
+        cart[index].quantity = newQuantity;
+        localStorage.setItem("cart", JSON.stringify(cart));
+        displayCartItems();
+        updateCartCount();
+    }
+}
+
+// Remove item from cart
+function removeFromCart(index) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if (index >= 0 && index < cart.length) {
+        cart.splice(index, 1); // Remove item
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        displayCartItems(); // Refresh cart page
+    }
+}
+
+// Clear entire cart
+function clearCart() {
+    localStorage.removeItem("cart");
+    updateCartCount();
+    displayCartItems();
+}
+
+// Submit order (dummy function for now)
+function submitOrder() {
+    alert("Order submitted successfully!");
+    clearCart();
+}
+
+// Update cart count in header
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById("cartCount").innerText = totalItems > 0 ? totalItems : "0";
+}
+</script>
+
+<style>
+/* Styling for remove button */
+.remove-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.remove-btn:hover {
+    background-color: darkred;
+}
+
+/* Style for quantity input */
+input[type="number"] {
+    width: 50px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+</style>
+
+{% endblock %}

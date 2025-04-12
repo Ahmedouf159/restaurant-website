@@ -1,0 +1,86 @@
+<!-- profile.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Profile</h2>
+    <form id="profileForm" method="POST" action="/update_profile">
+        <label>Username:</label>
+        <input type="text" name="username" id="username" value="{{ user.username }}" required>
+        
+        <label>Password:</label>
+        <input type="password" name="password" id="password" value="{{ user.password }}" required>
+        
+        <label>Location:</label>
+        <input type="text" name="location" id="location" value="{{ user.location }}" required readonly>
+        
+        <button type="button" onclick="getCurrentLocation()">Use My Location</button>
+        <button type="button" onclick="openMapPicker()">Locate from Map</button>
+        
+        <button type="submit">Update Profile</button>
+    </form>
+</div>
+
+<script>
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            document.getElementById("location").value = position.coords.latitude + ", " + position.coords.longitude;
+        });
+    } else {
+        alert("Geolocation is not supported by your browser");
+    }
+}
+
+function openMapPicker() {
+    alert("Map picker coming soon!");
+}
+</script>
+{% endblock %}
+
+<!-- my_orders.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>My Orders</h2>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Items</th>
+            <th>Total Price</th>
+            <th>Order Time</th>
+            <th>Location</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.items }}</td>
+            <td>${{ order.total_price }}</td>
+            <td>{{ order.order_time }}</td>
+            <td>{{ order.location }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+
+<!-- Update cart.js to check location before submitting order -->
+<script>
+function submitOrder() {
+    let location = "{{ user.location }}";
+    if (!location || location.trim() === "") {
+        alert("Please set your location in Profile before submitting an order.");
+        window.location.href = '/profile';
+        return;
+    }
+    
+    fetch('/submit_order', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            alert("Order submitted successfully!");
+            localStorage.removeItem("cart");
+            window.location.href = '/my_orders';
+        });
+}
+</script>

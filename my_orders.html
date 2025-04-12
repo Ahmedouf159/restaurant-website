@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>My Orders</h1>
+
+{% if orders %}
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Total Price</th>
+            <th>Location</th>
+            <th>Order Time</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>${{ order.total_price }}</td>
+            <td>{{ order.location }}</td>
+            <td>{{ order.order_time }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No orders found.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+
+    <div class="hero-content">
+        <h1>Welcome to Our Restaurant</h1>
+        <p style="color: blue;">Experience the finest meals crafted with love and fresh ingredients.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('menu') }}" class="btn">Explore Menu</a>
+            <a href="{{ url_for('about') }}" class="btn btn-secondary">Learn More</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="about-section">
+    <div class="about-row">
+        <div class="about-text">
+            <h2>About Us</h2>
+            <p>We believe in serving fresh, healthy, and delicious meals prepared with love. Join us for a memorable dining experience!</p>
+        </div>
+        <img src="../static/images/2023-11-07-06-17-11-11.jpg" class="about-img">
+    </div>
+    <!-- about.html -->
+<div class="about-container">
+    <h1>About Us</h1>
+    <p>Welcome to our restaurant! We serve the best meals with love and fresh ingredients.</p>
+
+    <h2>Contact Us</h2>
+    <form action="/contact" method="post" class="contact-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" placeholder="name">
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="email">
+        
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="5" placeholder="message" required></textarea>
+        
+        <button type="submit">Send Message</button>
+    </form>
+
+    <div class="contact-details">
+        <p>ah0349900@gmail.com</p>
+        <pre>Phone: 01015335063 ,Address: 123 Food Street, Flavor Town</pre>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+
+    </div>
+</div>
+
+
+{% endblock %}

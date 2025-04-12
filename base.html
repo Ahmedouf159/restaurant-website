@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title if title else "Ahmed Restaurant" }}</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <header>
+    
+
+
+        <div class="navbar">
+            <img src="../static/images/programmer.png" alt="">
+            <a href="/" class="logo">AHMED RESTAURANT</a>
+
+            <nav class="nav-menu">
+                <ul>
+                    <a href="{{ url_for('home') }}" class="btn btn-secondary">Learn More</a>
+
+                    <a href="{{ url_for('about') }}" class="btn btn-secondary">Learn More</a>
+
+
+
+
+
+                    <a href="{{ url_for('menu') }}" class="btn btn-secondary">See Menu</a>
+
+                    <li><a href="/cart">Cart</a></li>
+                </ul>
+            </nav> 
+            <div class="cart-icon">
+                <a href="/cart" class="cart-icon">
+                    <img src="../static/images/download.png" alt="Cart">
+                    <span id="cartCount" class="cart-badge">0</span>
+                </a>
+                
+            </div>
+            
+            
+            <!-- Profile Dropdown -->
+            {% if session.get('user_id') %}
+            <div class="profile-container">
+                <div class="profile-icon" id="profile-btn">
+                    {{ session.get('username')[0].upper() }}
+                </div>
+            </div>
+
+            <!-- New Centered Profile Dropdown Box -->
+            <div class="profile-popup" id="profile-dropdown">
+                <div class="popup-content">
+                    <p class="popup-title">Welcome, {{ session.get('username') }}</p>
+                    <a href="{{ url_for('profile') }}" class="popup-link">Profile</a>
+
+                    <a href="{{ url_for('logout') }}" class="popup-link">Logout</a>
+
+                    <button class="popup-close" id="close-popup">Close</button>
+                </div>
+            </div>
+            {% else %}
+            <a href="/login" class="btn login-btn">Login</a>
+            <a href="/signin" class="btn signup-btn">Sign Up</a>
+            {% endif %}
+
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-button" id="mobile-menu-btn">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <nav class="mobile-menu" id="mobile-menu">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/menu">Menu</a></li>
+                <li><a href="/cart">Cart</a></li>
+                {% if session.get('user_id') %}
+                <li><a href="/logout">Logout</a></li>
+                {% else %}
+                <li><a href="/login">Login</a></li>
+                <li><a href="/signin">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <p>&copy; {{ year if year else "2024" }} Ahmed Restaurant. All Rights Reserved.</p>
+            <div class="social-icons">
+                <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <a class="ap" href="/about">About us</a>
+    </footer>
+    
+
+    <!-- JavaScript -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener("click", function () {
+                mobileMenu.classList.toggle("show");
+            });
+        }
+
+        // Profile Popup Toggle
+        const profileBtn = document.getElementById("profile-btn");
+        const profilePopup = document.getElementById("profile-dropdown");
+        const closePopup = document.getElementById("close-popup");
+
+        if (profileBtn) {
+            profileBtn.addEventListener("click", function () {
+                profilePopup.style.display = "flex";
+            });
+        }
+
+        if (closePopup) {
+            closePopup.addEventListener("click", function () {
+                profilePopup.style.display = "none";
+            });
+        }
+
+    });
+
+    let cart = [];
+
+function addToCart(name, price) {
+    let existingItem = cart.find(item => item.name === name);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ name, price, quantity: 1 });
+    }
+
+    updateCart();
+    saveCart();
+}
+
+function updateCart() {
+    let cartCount = document.getElementById("cartCount");
+    let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.innerText = totalItems;
+}
+
+function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function loadCart() {
+    let storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+        cart = JSON.parse(storedCart);
+        updateCart();
+    }
+}
+
+window.onload = loadCart;
+
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    document.getElementById("cartCount").innerText = cartCount > 0 ? cartCount : 0;
+}
+
+// Run this on page load
+document.addEventListener("DOMContentLoaded", updateCartCount);
+
+
+
+    </script>
+<script src="../static/js/script.js"></script>
+</body>
+</html>
